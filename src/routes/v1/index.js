@@ -1,10 +1,9 @@
 const express = require('express');
 
-const { InfoController,UserController } = require('../../controllers');
+const {UserController } = require('../../controllers');
 
 const router = express.Router();
 
-router.get('/info', InfoController.info);
 
 // user
 router.post('/user',UserController.createUser);

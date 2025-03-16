@@ -1,5 +1,5 @@
 const CrudRepository = require('./crud-repository');
-const { User, Tag, Sequelize } = require('../models');  // assuming User and Tag are the models
+const { User, Tag, Sequelize } = require('../models');
 const { Op } = Sequelize;
 
 class TagRepository extends CrudRepository {
@@ -10,8 +10,6 @@ class TagRepository extends CrudRepository {
     async getAll(tags) {
         try {
             const tagList = tags.split(',').map(tag => tag.trim());
-            console.log('tagList:', tagList);
-
             const tagsWithUsers = await Tag.findAll({
                 where: {
                     tag: {
@@ -30,11 +28,7 @@ class TagRepository extends CrudRepository {
                 }
             });
 
-            console.log('tagsWithUsers:', tagsWithUsers);
-
-
             const usersMap = {};
-
             tagsWithUsers.forEach(tag => {
                 const userId = tag.userId;
                 const createdAt = new Date(tag.createdAt);
@@ -44,7 +38,6 @@ class TagRepository extends CrudRepository {
                 // console.log('expiryTime:', expireTime);
                 // console.log('currentTime:', currentTime);
                 if (currentTime > expireTime) {
-                    console.log(`Tag "${tag.tag}" has expired and will be skipped.`);
                     return;
                 }
 
@@ -58,13 +51,7 @@ class TagRepository extends CrudRepository {
 
                 usersMap[userId].tags.push(tag.tag);
             });
-
-
-
             const result = Object.values(usersMap);
-
-            // console.log('Result:', result);
-
             return { users: result };
         }
         catch (err) {
