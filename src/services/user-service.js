@@ -53,14 +53,12 @@ async function addTags(id,tags,expiry) {
         if (!tags || !Array.isArray(tags) || !expiry) {
             return res.status(400).json({ error: 'Tags and expiry are required.' });
         }
-    
         for (const tag of tags) {
             await tagRepository.create({ userId: id, tag, expiry });
         }
     }
     catch (err) {
         if (err.name == 'SequelizeValidationError') {    
-
             let explanation = [];
             err.errors.forEach(err => {
                 explanation.push(err.message);

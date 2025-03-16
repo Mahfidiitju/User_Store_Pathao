@@ -60,16 +60,19 @@ async function addTags(req, res) {
 async function getTags(req, res) {
     try {
         const { tags } = req.query;
-  
         const response = await UserService.getTags(tags);
-        return res
-            .status(StatusCodes.OK)
-            .json(response);
+        console.log(response['users'].length)
+        if (response['users']?.length=== 0) {
+            return res.status(StatusCodes.OK).json({
+                message: "All the tags of the user are expired"
+            });
+        }
+        return res.status(StatusCodes.OK).json(response);
     } catch (err) {
         ErrorResponse.error = err;
         return res
             .status(err.statusCode)
-            .json(ErrorResponse)
+            .json(ErrorResponse);
     }
 }
 
