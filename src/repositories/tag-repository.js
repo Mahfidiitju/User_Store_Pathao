@@ -27,32 +27,7 @@ class TagRepository extends CrudRepository {
                     }
                 }
             });
-
-            const usersMap = {};
-            tagsWithUsers.forEach(tag => {
-                const userId = tag.userId;
-                const createdAt = new Date(tag.createdAt);
-                let expireTime = BigInt(createdAt.getTime());
-                expireTime += BigInt(tag.expiry);
-                const currentTime = new Date().getTime();
-                // console.log('expiryTime:', expireTime);
-                // console.log('currentTime:', currentTime);
-                if (currentTime > expireTime) {
-                    return;
-                }
-
-                if (!usersMap[userId]) {
-                    usersMap[userId] = {
-                        id: userId,
-                        name: `${tag.User.firstName} ${tag.User.lastName}`,
-                        tags: []
-                    };
-                }
-
-                usersMap[userId].tags.push(tag.tag);
-            });
-            const result = Object.values(usersMap);
-            return { users: result };
+            return tagsWithUsers;
         }
         catch (err) {
             throw err;

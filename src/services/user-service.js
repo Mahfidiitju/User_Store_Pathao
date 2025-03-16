@@ -1,4 +1,4 @@
-const { UserRepository,TagRepository } = require('../repositories');
+const { UserRepository, TagRepository } = require('../repositories');
 const { StatusCodes } = require('http-status-codes')
 const userRepository = new UserRepository();
 const tagRepository = new TagRepository();
@@ -48,7 +48,7 @@ async function getOneUser(id) {
     }
 }
 
-async function addTags(id,tags,expiry) {
+async function addTags(id, tags, expiry) {
     try {
         if (!tags || !Array.isArray(tags) || !expiry) {
             return res.status(400).json({ error: 'Tags and expiry are required.' });
@@ -58,7 +58,7 @@ async function addTags(id,tags,expiry) {
         }
     }
     catch (err) {
-        if (err.name == 'SequelizeValidationError') {    
+        if (err.name == 'SequelizeValidationError') {
             let explanation = [];
             err.errors.forEach(err => {
                 explanation.push(err.message);
@@ -71,8 +71,30 @@ async function addTags(id,tags,expiry) {
 
 async function getTags(tags) {
     try {
-        const tag = await tagRepository.getAll(tags);
-        return tag;
+        const tagsWithUsers = await tagRepository.getAll(tags);
+        const usersMap = {};
+        tagsWithUsers.forEach(tag => {
+            const userId = tag.userId;
+            const createdAt = new Date(tag.createdAt);
+            let expireTime = BigInt(createdAt.getTime());
+            expireTime += BigInt(tag.expiry);
+            const currentTime = new Date().getTime();
+
+            if (currentTime > expireTime) {
+                return;
+            }
+            if (!usersMap[userId]) {
+                usersMap[userId] = {
+                    id: userId,
+                    name: `${tag.User.firstName} ${tag.User.lastName}`,
+                    tags: []
+                };
+            }
+
+            usersMap[userId].tags.push(tag.tag);
+        });
+        const result = Object.values(usersMap);
+        return { users: result };
     }
     catch (err) {
         if (err.name == 'SequelizeValidationError') {
@@ -88,5 +110,5 @@ async function getTags(tags) {
 
 
 module.exports = {
-    createUser,getOneUser,addTags,getTags
+    createUser, getOneUser, addTags, getTags
 }
