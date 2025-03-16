@@ -63,12 +63,11 @@ class TagRepository extends CrudRepository {
 
             const result = Object.values(usersMap);
 
-            console.log('Result:', result);
+            // console.log('Result:', result);
 
             return { users: result };
         }
         catch (err) {
-            console.error('Something went wrong in the getAll method:', err);
             throw err;
         }
     }

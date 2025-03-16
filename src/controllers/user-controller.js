@@ -44,10 +44,10 @@ async function addTags(req, res) {
     try {
         const { id } = req.params;
         const { tags, expiry } = req.body;
-        const response = await UserService.addTags(id,tags,expiry);
+        const response = await UserService.addTags(id, tags, expiry);
 
         return res
-            .status(StatusCodes.OK)
+            .status(StatusCodes.CREATED)
             .json({});
     } catch (err) {
         ErrorResponse.error = err;
@@ -62,12 +62,14 @@ async function getTags(req, res) {
         const { tags } = req.query;
         const response = await UserService.getTags(tags);
         console.log(response['users'].length)
-        if (response['users']?.length=== 0) {
+        if (response['users']?.length === 0) {
             return res.status(StatusCodes.OK).json({
                 message: "All the tags of the user are expired"
             });
         }
-        return res.status(StatusCodes.OK).json(response);
+        return res.
+            status(StatusCodes.OK).
+            json(response);
     } catch (err) {
         ErrorResponse.error = err;
         return res
@@ -79,5 +81,5 @@ async function getTags(req, res) {
 
 
 module.exports = {
-    createUser, getOneUser, addTags,getTags
+    createUser, getOneUser, addTags, getTags
 }
